@@ -90,10 +90,10 @@ fun NewsScreen(apiInterface: ApiInterface) {
 fun NewsArticleItem(newsArticle: NewsArticle) {
     val context = LocalContext.current // Accessing the Context using LocalContext
 
-//    val intent = Intent(context, Description::class.java).apply {
-//        putExtra("title", newsArticle.title)
-//        putExtra("description", newsArticle.description)
-//    }
+    val intent = Intent(context, Description::class.java).apply {
+        putExtra("title", newsArticle.title)
+        putExtra("description", newsArticle.description)
+    }
 
     Surface(
         shape = MaterialTheme.shapes.medium,
