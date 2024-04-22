@@ -54,7 +54,7 @@ fun NewsScreen(apiInterface: ApiInterface) {
 
     LaunchedEffect(Unit) {
         try {
-            val response = apiInterface.getTopHeadlines("us", "fdc64456321e4f309868a465f1aa750e")
+            val response = apiInterface.getTopHeadlines("in", "fdc64456321e4f309868a465f1aa750e")
             newsList.addAll(response.articles)
             loading.value = false
         } catch (e: Exception) {
