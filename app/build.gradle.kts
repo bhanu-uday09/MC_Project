@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -76,4 +77,7 @@ dependencies {
 
     // OkHttp Logging Interceptor (for logging network requests)
     implementation ("com.squareup.okhttp3:logging-interceptor:4.9.1")
+
+    //Animation
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }
