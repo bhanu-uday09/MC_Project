@@ -71,7 +71,7 @@ fun MC_NewsAppTheme(
 }
 
 @Composable
-fun LazyStaggeredGridComposeTheme(
+fun NewsAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {

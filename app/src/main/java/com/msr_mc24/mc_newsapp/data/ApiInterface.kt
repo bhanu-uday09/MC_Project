@@ -9,8 +9,10 @@ interface ApiInterface {
 
     @GET("top-headlines")
     suspend fun getTopHeadlines(
-        @Query("country") country: String,
-        @Query("apiKey") apiKey: String
+        @Query("country") country: String = "in",
+        @Query("apiKey") apiKey: String = "fdc64456321e4f309868a465f1aa750e",
+        @Query("language") language: String = "en",
+        @Query("category") category: String? = null
     ): NewsResponse
 
     companion object {
