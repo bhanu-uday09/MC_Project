@@ -15,6 +15,11 @@
         android:theme="@style/Theme.App.Starting"
         tools:targetApi="31">
         <activity
+            android:name=".States"
+            android:exported="false"
+            android:label="@string/title_activity_states"
+            android:theme="@style/Theme.App.Starting" />
+        <activity
             android:name=".CardView"
             android:exported="false"
             android:label="@string/title_activity_card_view"

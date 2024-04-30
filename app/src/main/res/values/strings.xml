@@ -2,4 +2,5 @@
     <string name="app_name">Samachar</string>
     <string name="title_activity_description">Description</string>
     <string name="title_activity_card_view">CardView</string>
+    <string name="title_activity_states">States</string>
 </resources>

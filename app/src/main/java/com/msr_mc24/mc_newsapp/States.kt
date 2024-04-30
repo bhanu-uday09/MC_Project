@@ -10,10 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.msr_mc24.mc_newsapp.data.ApiInterface
 import com.msr_mc24.mc_newsapp.ui.theme.MC_NewsAppTheme
 
-class CardView : ComponentActivity() {
+class States : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -23,11 +22,25 @@ class CardView : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Provide an instance of ApiInterface here
-                    val apiInterface = ApiInterface.create()
-                    NewsScreen(apiInterface)
+                    Greeting("Android")
                 }
             }
         }
+    }
+}
+
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    MC_NewsAppTheme {
+        Greeting("Android")
     }
 }
