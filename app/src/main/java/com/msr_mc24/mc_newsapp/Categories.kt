@@ -1,6 +1,7 @@
 package com.msr_mc24.mc_newsapp
 
 import android.content.Intent
+import android.nfc.cardemulation.CardEmulation.EXTRA_CATEGORY
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,7 +47,7 @@ data class ListItem(
     val imageResId: Int
 )
 @Composable
-fun Categories(apiInterface: ApiInterface) {
+fun Categories() {
 
     val items = remember {
         mutableListOf(
@@ -136,7 +137,7 @@ fun Categories(apiInterface: ApiInterface) {
                 contentDescription = null,
                 modifier = Modifier
                     .height(65.dp)
-                    .padding(30.dp,15.dp,3.dp,10.dp)
+                    .padding(30.dp, 15.dp, 3.dp, 10.dp)
             )
             Text(
                 text = "CATEGORIES",
@@ -156,7 +157,7 @@ fun Categories(apiInterface: ApiInterface) {
             columns = StaggeredGridCells.Fixed(2),
             modifier = Modifier
                 .fillMaxSize()
-                .padding(10.dp,0.dp,10.dp),
+                .padding(10.dp, 0.dp, 10.dp),
             contentPadding = PaddingValues(4.dp),
             horizontalArrangement = Arrangement.spacedBy(9.dp),
             verticalItemSpacing = 9.dp
@@ -167,16 +168,18 @@ fun Categories(apiInterface: ApiInterface) {
                     onItemClick = {
                         clickedCategory -> selectedCategory = clickedCategory
                         // Pass intent to open a new activity when the box is clicked
-                        val intent = Intent(context, NewsDisplay::class.java)
+                        val intent = Intent(context, NewsDisplay::class.java).apply {
+                            putExtra(EXTRA_CATEGORY, selectedCategory)
+                        }
                         context.startActivity(intent)
                     }
                 )
             }
         }
         // Invoke NewsScreen when a category is selected
-        if (selectedCategory.isNotBlank()) {
-            NewsScreen(apiInterface = apiInterface, category = selectedCategory)
-        }
+//        if (selectedCategory.isNotBlank()) {
+//            NewsScreen(apiInterface = ApiInterface.create(), category = selectedCategory)
+//        }
     }
 }
 

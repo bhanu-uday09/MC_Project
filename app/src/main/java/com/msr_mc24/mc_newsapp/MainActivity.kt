@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                 // Create a coroutine scope for managing coroutines
                 coroutineScope = rememberCoroutineScope()
                 // Set up your LazyVerticalStaggeredGrid
-                Categories(apiInterface)
+                Categories()
             }
         }
     }
