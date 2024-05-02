@@ -68,6 +68,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation ("org.jsoup:jsoup:1.14.3")
+
 
     // Retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")

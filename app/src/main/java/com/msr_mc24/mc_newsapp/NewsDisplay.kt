@@ -82,16 +82,25 @@ fun NewsScreen(apiInterface: ApiInterface, category: String) {
     // Fetch news articles when the category changes or the component is recomposed
     LaunchedEffect(category) {
         try {
-            // Fetch news articles from the API using the provided category
-            val response = apiInterface.getTopHeadlines(country = "in", category = category, apiKey = "fdc64456321e4f309868a465f1aa750e", language = "en")
-            // Clear existing list before adding new articles
-            newsList.clear()
-            // Add fetched articles to the list
-            newsList.addAll(response.articles)
-            Log.w("news","$newsList")
+            if (category.isNotEmpty()) {
+                // Fetch news articles from the API using the provided category
+                val response = apiInterface.getTopHeadlines(apiKey = "fdc64456321e4f309868a465f1aa750e", language = "en", country = "in", category = category)
+                // Filter out articles with title "REMOVED"
+                val filteredArticles = response.articles.filter { it.title != "[Removed]" }
+                // Clear existing list before adding new articles
+                newsList.clear()
+                // Add filtered articles to the list
+                newsList.addAll(filteredArticles)
+                Log.w("news", category)
+                Log.d("res","$response")
 
-            // Update loading state
-            loading = false
+                // Update loading state
+                loading = false
+            } else {
+                // If search query is empty, clear the list
+                newsList.clear()
+                loading = false
+            }
         } catch (e: Exception) {
             // Handle error
             e.printStackTrace()
@@ -166,7 +175,12 @@ fun NewsArticleCard(newsArticle: NewsArticle, category: String) {
     val context = LocalContext.current
     val intent = Intent(context, Description::class.java).apply {
         putExtra("title", newsArticle.title)
-        putExtra("description", newsArticle.content)
+        putExtra("author",newsArticle.author)
+        putExtra("description", newsArticle.description)
+        putExtra("content",newsArticle.content)
+        putExtra("image",newsArticle.urlToImage)
+        putExtra("url",newsArticle.url)
+        putExtra("date",newsArticle.publishedAt)
     }
     Surface {
         Column {
