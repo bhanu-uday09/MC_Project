@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -52,6 +53,13 @@ fun Categories() {
     val items = remember {
         mutableListOf(
             ListItem(
+                id = "search",
+                180.dp,
+                Color(0xFFB5C0D0).copy(alpha = 1f),
+                "SEARCH",
+                R.drawable.search
+            ),
+            ListItem(
                 id = "general",
                 210.dp,
                 Color(0xFFB5C18E).copy(alpha = 1f),
@@ -59,18 +67,18 @@ fun Categories() {
                 R.drawable.headlines
             ),
             ListItem(
-                id = "general",
-                180.dp,
-                Color(0xFFF7DCB9).copy(alpha = 1f),
-                "GENERAL",
-                R.drawable.general
-            ),
-            ListItem(
                 id = "business",
                 210.dp,
                 Color(0xFFACE2E1).copy(alpha = 1f),
                 "BUSINESS",
                 R.drawable.business
+            ),
+            ListItem(
+                id = "technology",
+                180.dp,
+                Color(0xFFFB6D48).copy(alpha = 1f),
+                "TECHNOLOGY",
+                R.drawable.tech
             ),
             ListItem(
                 id = "sports",
@@ -88,25 +96,19 @@ fun Categories() {
             ),
             ListItem(
                 id = "science",
-                180.dp,
+                210.dp,
                 Color(0xFFFA9905).copy(alpha = 1f),
                 "SCIENCE",
                 R.drawable.science
             ),
             ListItem(
                 id = "entertainment",
-                210.dp,
+                180.dp,
                 Color(0xFFD74B76).copy(alpha = 1f),
                 "ENTERTAINMENT",
                 R.drawable.entertainment
             ),
-            ListItem(
-                id = "technology",
-                180.dp,
-                Color(0xFFFB6D48).copy(alpha = 1f),
-                "TECHNOLOGY",
-                R.drawable.tech
-            ),
+
 //                ListItem(
 //                    Random.nextInt(100, 300).dp,
 //                    Color(Random.nextLong(0xFFFFFFFF)).copy(alpha = 1f),
@@ -126,28 +128,34 @@ fun Categories() {
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center
     ) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .padding(20.dp, 20.dp, 20.dp, 10.dp)
-            .background(color = Color(0xFFFFCBCB), shape = RoundedCornerShape(16.dp))
+        Row(
+            modifier = Modifier
+                .padding(2.dp)
+                .background(color = Color(0xFFFFCBCB), shape = RoundedCornerShape(12.dp))
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.categories),
-                contentDescription = null,
+            Row(
                 modifier = Modifier
-                    .height(65.dp)
-                    .padding(30.dp, 15.dp, 3.dp, 10.dp)
-            )
-            Text(
-                text = "CATEGORIES",
-                fontSize = 40.sp,
-                color = Color.Black,
-                textAlign = TextAlign.Center,
-                fontFamily = FontFamily.Monospace,
-                modifier = Modifier
-                    .padding(4.dp,12.dp,23.dp,10.dp)
-            )
+                    .fillMaxWidth()
+                    .height(70.dp)
+                    .wrapContentWidth(align = Alignment.CenterHorizontally)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.categories),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(65.dp)
+                        .padding(30.dp, 15.dp, 3.dp, 10.dp)
+                )
+                Text(
+                    text = "CATEGORIES",
+                    fontSize = 40.sp,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily.Monospace,
+                    modifier = Modifier
+                        .padding(4.dp, 12.dp, 23.dp, 10.dp)
+                )
+            }
         }
 
         var selectedCategory by remember { mutableStateOf("") }
@@ -165,16 +173,21 @@ fun Categories() {
             items(items) { item ->
                 GridBox(
                     item = item,
-                    onItemClick = {
-                        clickedCategory -> selectedCategory = clickedCategory
-                        // Pass intent to open a new activity when the box is clicked
-                        val intent = Intent(context, NewsDisplay::class.java).apply {
-                            putExtra(EXTRA_CATEGORY, selectedCategory)
+                    onItemClick = { clickedCategory ->
+                        if (clickedCategory == "search") {
+                            val intent = Intent(context, SearchView::class.java)
+                            context.startActivity(intent)
+                        } else {
+                            selectedCategory = clickedCategory
+                            val intent = Intent(context, NewsDisplay::class.java).apply {
+                                putExtra(EXTRA_CATEGORY, selectedCategory)
+                            }
+                            context.startActivity(intent)
                         }
-                        context.startActivity(intent)
                     }
                 )
             }
+
         }
         // Invoke NewsScreen when a category is selected
 //        if (selectedCategory.isNotBlank()) {

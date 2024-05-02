@@ -15,6 +15,14 @@ interface ApiInterface {
         @Query("category") category: String? = null
     ): NewsResponse
 
+    @GET("everything")
+    suspend fun getSearch(
+        @Query("apiKey") apiKey: String = "fdc64456321e4f309868a465f1aa750e",
+        @Query("language") language: String = "en",
+        @Query("sortBy") sortBy: String? = "popularity",
+        @Query("q") q: String? = null
+    ): NewsResponse
+
     companion object {
         private const val BASE_URL = "https://newsapi.org/v2/"
 
