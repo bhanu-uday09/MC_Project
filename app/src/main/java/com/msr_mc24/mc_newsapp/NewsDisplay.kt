@@ -85,7 +85,7 @@ fun NewsScreen(apiInterface: ApiInterface, category: String) {
             if (category.isNotEmpty()) {
                 // Fetch news articles from the API using the provided category
                 val response = apiInterface.getTopHeadlines(apiKey = "fdc64456321e4f309868a465f1aa750e", language = "en", country = "in", category = category)
-                // Filter out articles with title "REMOVED"
+                // Filter out articles with title "[Removed]"
                 val filteredArticles = response.articles.filter { it.title != "[Removed]" }
                 // Clear existing list before adding new articles
                 newsList.clear()

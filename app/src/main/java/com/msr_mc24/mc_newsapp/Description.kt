@@ -40,8 +40,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.core.content.ContextCompat.startActivity
 import coil.compose.rememberAsyncImagePainter
+import java.util.Locale
 
 class Description : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +67,15 @@ class Description : ComponentActivity() {
             )
         }
     }
+    companion object {
+        init {
+            System.loadLibrary("mc_newsapp")
+        }
+    }
 }
+
+// Import JNI function
+external fun preprocessText(inputText: String): String
 
 @Composable
 fun DescriptionScreen(
@@ -79,112 +89,157 @@ fun DescriptionScreen(
 ) {
 
     val context = LocalContext.current
+    var webpageContent by remember { mutableStateOf("") }
+    var showWebpageContent by remember { mutableStateOf(false) }
 
-
-    LazyColumn(
-        modifier = Modifier.padding(16.dp)
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(10.dp)
     ) {
-        item {
-            // Display image
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                shape = RectangleShape
+        // Fixed image card
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+            shape = RectangleShape
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(image),
-                        contentDescription = image,
-                        contentScale = ContentScale.Fit
+                Image(
+                    painter = rememberAsyncImagePainter(image),
+                    contentDescription = image,
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
+
+        // Scrollable content
+        Box(modifier = Modifier.weight(1f)) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                item {
+                    // Display title
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontFamily = FontFamily.Serif,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
+
+                    // Display author with date
+                    Row(
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    ) {
+                        Text(
+                            text = author,
+                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = date,
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(5.dp))
+                    // Display description
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        maxLines = 40,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Justify
+                    )
+
+                    if (!showWebpageContent) {
+                        // Split content into paragraphs
+                        val paragraphs = content.split("\n\n")
+
+                        // Display content paragraphs
+                        paragraphs.forEach { paragraph ->
+                            Text(
+                                text = paragraph.trim()
+                                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
+                                style = MaterialTheme.typography.headlineSmall,
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                maxLines = 4,
+                                textAlign = TextAlign.Justify
+                            )
+                        }
+                    } else {
+                        // Call the JNI function to preprocess the text
+                        val preprocessResult = preprocessText(webpageContent)
+
+                        // Split preprocessed text into paragraphs
+                        val paragraphs = preprocessResult.split("\n\n")
+
+                        // Display preprocessed summarized text paragraphs
+                        paragraphs.forEach { paragraph ->
+                            // Split paragraph into sentences
+                            val sentences = paragraph.split(". ")
+
+                            // Capitalize the first letter of each sentence and join them back together
+                            val formattedParagraph = sentences.joinToString(". ") { sentence ->
+                                sentence.trim().capitalize()
+                            }
+
+                            Text(
+                                text = formattedParagraph.trim(),
+                                style = MaterialTheme.typography.headlineSmall,
+                                modifier = Modifier.padding(bottom = 8.dp),
+                                textAlign = TextAlign.Justify
+                            )
+                        }
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            Divider(modifier = Modifier.height(2.dp))
-
-            // Display title
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineMedium,
-                fontFamily = FontFamily.Serif,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            // Display author with date
-            Row(
-                modifier = Modifier.padding(bottom = 8.dp)
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+        ) {
+            Button(
+                onClick = {
+                    // Fetch webpage content
+                    val fetchWebpageContent = FetchWebpageContent(object :
+                        FetchWebpageContent.OnFetchCompleteListener {
+                        override fun onFetchComplete(content: String) {
+                            webpageContent = content
+                            // Update the state to trigger recomposition
+                            showWebpageContent = true
+                        }
+                    })
+                    fetchWebpageContent.execute(url)
+                },
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = author,
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = date,
+                    text = "Read More",
                     style = MaterialTheme.typography.labelLarge
                 )
             }
-
-            Spacer(modifier = Modifier.height(5.dp))
-            // Display description
-            Text(
-                text = description,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 8.dp),
-                maxLines = 40,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Justify
-            )
-
-            Text(
-                text = content,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(bottom = 8.dp),
-                maxLines = 4,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Justify
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+            Button(
+                onClick = {
+                    // Open URL
+                    val uri = Uri.parse(url)
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.weight(1f)
             ) {
-                Button(
-                    onClick = {
-                        // Open URL
-                        val uri = Uri.parse(url)
-                        val intent = Intent(Intent.ACTION_VIEW, uri)
-                        context.startActivity(intent)
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "Read More",
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
-
-                Button(
-                    onClick = {
-                        // Open URL
-                        val uri = Uri.parse(url)
-                        val intent = Intent(Intent.ACTION_VIEW, uri)
-                        context.startActivity(intent)
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "Add to Fav...",
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
+                Text(
+                    text = "Open In Browser",
+                    style = MaterialTheme.typography.labelLarge
+                )
             }
         }
     }
