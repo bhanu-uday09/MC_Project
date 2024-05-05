@@ -52,7 +52,7 @@ fun Categories() {
 
     val items = remember {
         mutableListOf(
-            ListItem(
+               ListItem(
                 id = "search",
                 180.dp,
                 Color(0xFFB5C0D0).copy(alpha = 1f),
@@ -108,6 +108,14 @@ fun Categories() {
                 "ENTERTAINMENT",
                 R.drawable.entertainment
             ),
+            ListItem(
+                id = "local",
+                180.dp,
+                Color(0xFFD74B76).copy(alpha = 1f),
+                "LOCAL",
+                R.drawable.entertainment
+            ),
+
 
 //                ListItem(
 //                    Random.nextInt(100, 300).dp,
@@ -177,7 +185,14 @@ fun Categories() {
                         if (clickedCategory == "search") {
                             val intent = Intent(context, SearchView::class.java)
                             context.startActivity(intent)
-                        } else {
+                        }
+
+                        else if(clickedCategory=="local"){
+                            val intent = Intent(context,LocationTracker::class.java)
+                            context.startActivity(intent)
+                        }
+
+                        else {
                             selectedCategory = clickedCategory
                             val intent = Intent(context, NewsDisplay::class.java).apply {
                                 putExtra(EXTRA_CATEGORY, selectedCategory)

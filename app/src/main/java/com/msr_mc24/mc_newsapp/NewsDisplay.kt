@@ -170,6 +170,7 @@ fun NewsScreen(apiInterface: ApiInterface, category: String) {
     }
 }
 
+
 @Composable
 fun NewsArticleCard(newsArticle: NewsArticle, category: String) {
     val context = LocalContext.current

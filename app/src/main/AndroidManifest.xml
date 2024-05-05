@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Add permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 
     <application
         android:allowBackup="true"
@@ -18,6 +22,11 @@
             android:name=".SearchView"
             android:exported="false"
             android:label="@string/title_activity_search_view"
+            android:theme="@style/Theme.MC_NewsApp" />
+        <activity
+            android:name=".LocationTracker"
+            android:exported="false"
+            android:label = "LocationTracker"
             android:theme="@style/Theme.MC_NewsApp" />
         <activity
             android:name=".NewsDisplay"

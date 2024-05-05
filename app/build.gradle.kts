@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.material3.android)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -94,4 +95,6 @@ dependencies {
 
     //Animation
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    implementation("com.google.android.gms:play-services-location:18.0.0")
 }
