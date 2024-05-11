@@ -60,11 +60,25 @@ fun Categories() {
                 R.drawable.search
             ),
             ListItem(
+                id = "local",
+                210.dp,
+                Color(0xFFF1968F).copy(alpha = 1f),
+                "LOCAL",
+                R.drawable.local
+            ),
+            ListItem(
                 id = "general",
                 210.dp,
                 Color(0xFFB5C18E).copy(alpha = 1f),
                 "HEADLINES",
                 R.drawable.headlines
+            ),
+            ListItem(
+                id = "science",
+                180.dp,
+                Color(0xFFFA9905).copy(alpha = 1f),
+                "SCIENCE",
+                R.drawable.science
             ),
             ListItem(
                 id = "business",
@@ -81,13 +95,6 @@ fun Categories() {
                 R.drawable.tech
             ),
             ListItem(
-                id = "sports",
-                180.dp,
-                Color(0xFF008DDA).copy(alpha = 1f),
-                "SPORTS",
-                R.drawable.sport
-            ),
-            ListItem(
                 id = "health",
                 210.dp,
                 Color(0xFFEFB08C).copy(alpha = 1f),
@@ -95,11 +102,11 @@ fun Categories() {
                 R.drawable.health
             ),
             ListItem(
-                id = "science",
-                210.dp,
-                Color(0xFFFA9905).copy(alpha = 1f),
-                "SCIENCE",
-                R.drawable.science
+                id = "sports",
+                180.dp,
+                Color(0xFF008DDA).copy(alpha = 1f),
+                "SPORTS",
+                R.drawable.sport
             ),
             ListItem(
                 id = "entertainment",
@@ -109,11 +116,11 @@ fun Categories() {
                 R.drawable.entertainment
             ),
             ListItem(
-                id = "local",
+                id = "fav",
                 180.dp,
-                Color(0xFFD74B76).copy(alpha = 1f),
-                "LOCAL",
-                R.drawable.entertainment
+                Color(0xFFB091E6).copy(alpha = 1f),
+                "Favorites",
+                R.drawable.fav
             ),
 
 

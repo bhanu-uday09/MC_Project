@@ -113,3 +113,4 @@ Java_com_msr_1mc24_mc_1newsapp_DescriptionKt_preprocessText(JNIEnv *env, jclass 
     env->ReleaseStringUTFChars(input_text, inputTextPtr);
     return env->NewStringUTF(result.c_str());
 }
+

@@ -3,6 +3,8 @@ package com.msr_mc24.mc_newsapp
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -43,18 +45,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.core.content.ContextCompat.startActivity
 import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import java.util.Locale
 
+data class NewsItem(
+    val title: String,
+    val description: String,
+    val content: String,
+    val author: String,
+    val date: String,
+    val url: String,
+    val image: String
+)
+
 class Description : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val title = intent.getStringExtra("title") ?: "No Title"
         val description = intent.getStringExtra("description") ?: "No Description"
-        val content = intent.getStringExtra("content")?: "No Content"
-        val author = intent.getStringExtra("author")?: "No Author"
-        val date = intent.getStringExtra("date")?: "No Date"
-        val url = intent.getStringExtra("url")?: "No URL"
-        val image = intent.getStringExtra("image")?: "No Image"
+        val content = intent.getStringExtra("content") ?: "No Content"
+        val author = intent.getStringExtra("author") ?: "No Author"
+        val date = intent.getStringExtra("date") ?: "No Date"
+        val url = intent.getStringExtra("url") ?: "No URL"
+        val image = intent.getStringExtra("image") ?: "No Image"
         setContent {
             DescriptionScreen(
                 title = title,
@@ -91,6 +106,8 @@ fun DescriptionScreen(
     val context = LocalContext.current
     var webpageContent by remember { mutableStateOf("") }
     var showWebpageContent by remember { mutableStateOf(false) }
+    val database = Firebase.database
+    val favoritesRef = database.getReference("favorites")
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -240,6 +257,36 @@ fun DescriptionScreen(
                     text = "Open In Browser",
                     style = MaterialTheme.typography.labelLarge
                 )
+            }
+        }
+        Row {
+            Button(
+                onClick = {
+                    val newsItem = NewsItem(
+                        title = title,
+                        description = description,
+                        content = content,
+                        author = author,
+                        date = date,
+                        url = url,
+                        image = image
+                    )
+
+                    val newsItemId = favoritesRef.push().key
+                    newsItemId?.let {
+                        favoritesRef.child(it).setValue(newsItem)
+                            .addOnSuccessListener {
+                                Toast.makeText(context, "Added to Favorites", Toast.LENGTH_SHORT).show()
+                                Log.e("mas","Added")
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(context, "Failed to add to Favorites", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+                },
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(text = "Add to Favorites")
             }
         }
     }

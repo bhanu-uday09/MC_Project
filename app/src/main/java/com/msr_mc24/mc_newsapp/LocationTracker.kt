@@ -11,45 +11,31 @@ import com.msr_mc24.mc_newsapp.data.ApiInterface
 import com.msr_mc24.mc_newsapp.ui.theme.NewsAppTheme
 import android.content.pm.PackageManager
 import android.util.Log
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationServices
 import com.msr_mc24.mc_newsapp.data.NewsArticle
-import com.msr_mc24.mc_newsapp.ui.theme.MC_NewsAppTheme
-import com.msr_mc24.mc_newsapp.ui.theme.NewsAppTheme
-import kotlinx.coroutines.launch
 import android.Manifest
-import android.annotation.SuppressLint
 import android.location.Geocoder
 import android.location.Location
 import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import java.util.*
 
@@ -58,8 +44,6 @@ class LocationTracker : ComponentActivity(){
     private lateinit var apiInterface: ApiInterface
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var geocoder: Geocoder
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,25 +78,60 @@ class LocationTracker : ComponentActivity(){
             Log.d("Address","${address?.get(0)?.getAddressLine(0)}")
             Log.d("Locality","${address?.get(0)?.locality}")
 
+            val currloc = address?.get(0)?.getAddressLine(0)
+            val locality = address?.get(0)?.locality
 
             setContent {
+                val searchText = intent.getStringExtra("searchText") ?: ""
                 NewsAppTheme {
                     // A surface container using the 'background' color from the theme
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
-                        LocationScreen(apiInterface, search = "${address?.get(0)?.locality}")
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .background(
+                                        color = Color(0xFFB9A6E4),
+                                        shape = RoundedCornerShape(6.dp)
+                                    )
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp)
+                                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                                ) {
+                                    val imageResource = R.drawable.location
+                                    Image(
+                                        painter = painterResource(id = imageResource),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .height(60.dp)
+                                            .padding(5.dp)
+                                    )
+                                    if (locality != null) {
+                                        Text(
+                                            text = locality.uppercase(),
+                                            fontSize = 28.sp,
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.Bold,
+                                            textAlign = TextAlign.Center,
+                                            fontFamily = FontFamily.Monospace,
+                                            modifier = Modifier
+                                                .padding(4.dp, 12.dp, 23.dp, 10.dp)
+                                        )
+                                    }
+                                }
+                            }
+                            if (locality != null && currloc != null) {
+                                LocationScreen(apiInterface, locality, currloc)
+                            }
+                        }
                     }
                 }
             }
-
-
-
-
-
-
-
 
         }
 
@@ -121,9 +140,6 @@ class LocationTracker : ComponentActivity(){
         }
     }
 
-
-
-
 }
 
 
@@ -131,96 +147,56 @@ class LocationTracker : ComponentActivity(){
 
 
 @Composable
-fun LocationScreen(apiInterface: ApiInterface,search:String) {
-    val searchText = search      // Replace "YourFixedSearchTextHere" with your desired fixed search text
-
-    var searchPosition by remember { mutableStateOf(Alignment.Center) }
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    val newsList = remember { mutableStateListOf<NewsArticle>() }
+fun LocationScreen(apiInterface: ApiInterface, location: String, address: String) {
+    var newsList by remember { mutableStateOf<List<NewsArticle>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
 
     val coroutineScope = rememberCoroutineScope()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextField(
-                value = searchText,
-                onValueChange = { /* No-op as searchText is fixed */ },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp,20.dp,16.dp,5.dp)
-                    .background(color = Color(0xFFFFCBCB), shape = RoundedCornerShape(30.dp)),
-                label = { Text("Search") },
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        // Move TextField to top center when Enter is pressed
-                        if (searchText.isNotEmpty()) {
-                            searchPosition = Alignment.TopCenter
-                        }
-                        // Launch a coroutine to perform the search
-                        coroutineScope.launch {
-                            try {
-                                if (searchText.isNotEmpty()) {
-                                    // Fetch news articles from the API using the provided category
-                                    val response = apiInterface.getSearch(apiKey = "fdc64456321e4f309868a465f1aa750e", language = "en", sortBy = "popularity", q = searchText)
-                                    // Filter out articles with title "REMOVED"
-                                    val filteredArticles = response.articles.filter { it.title != "[Removed]" }
-                                    // Clear existing list before adding new articles
-                                    newsList.clear()
-                                    // Add filtered articles to the list
-                                    newsList.addAll(filteredArticles)
-                                    Log.w("news", searchText)
-                                    Log.d("res","$response")
-
-                                    // Update loading state
-                                    loading = false
-                                } else {
-                                    // If search query is empty, clear the list
-                                    newsList.clear()
-                                    loading = false
-                                }
-                            } catch (e: Exception) {
-                                // Handle error
-                                e.printStackTrace()
-                                loading = false
-                            }
-                            keyboardController?.hide()
-                        }
-                    }
-                ),
-                trailingIcon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.search),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .height(55.dp)
-                            .padding(8.dp)
-                    )
-                }
+    // Fetch news articles when the composable is first initialized
+    LaunchedEffect(location) {
+        try {
+            Log.d("LocationScreen", "Fetching news articles for location: $location")
+            // Fetch news articles from the API using the provided location
+            val response = apiInterface.getSearch(
+                apiKey = "fdc64456321e4f309868a465f1aa750e",
+                language = "en",
+                sortBy = "popularity",
+                q = location
             )
+            Log.d("LocationScreen", "Response: $response")
+            // Filter out articles with title "REMOVED"
+            val filteredArticles = response.articles.filter { it.title != "[Removed]" }
+            // Update news list with filtered articles
+            newsList = filteredArticles
+            // Update loading state
+            loading = false
+        } catch (e: Exception) {
+            // Handle error
+            e.printStackTrace()
+            Log.e("LocationScreen", "Error fetching news articles: ${e.message}")
+            loading = false
         }
+    }
 
+    Column(modifier = Modifier.fillMaxSize()) {
         // Display search query
         if (newsList.isNotEmpty() && !loading) {
             Text(
-                text = "Showing results for \"$searchText\"",
+                text = "Current Location: \"$address\"",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(26.dp,4.dp,20.dp,5.dp)
+                modifier = Modifier.padding(26.dp, 4.dp, 20.dp, 5.dp)
+            )
+            Text(
+                text = "Showing NEWS of \"$location\"",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(26.dp, 4.dp, 20.dp, 5.dp)
             )
         }
 
-        // Display news list
+        // Display news list or loading indicator
         if (loading) {
             // Show a loading indicator while data is being fetched
             CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -231,7 +207,7 @@ fun LocationScreen(apiInterface: ApiInterface,search:String) {
                     .weight(1f)
             ) {
                 items(newsList) { newsArticle ->
-                    NewsArticleCard(newsArticle, searchText)
+                    NewsArticleCard(newsArticle, location)
                 }
             }
         }

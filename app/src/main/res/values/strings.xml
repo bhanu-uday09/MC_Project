@@ -5,4 +5,5 @@
     <string name="title_activity_states">States</string>
     <string name="title_activity_news_display">NewsDisplay</string>
     <string name="title_activity_search_view">SearchView</string>
+    <string name="title_activity_favorite_news">FavoriteNews</string>
 </resources>
