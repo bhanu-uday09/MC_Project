@@ -82,28 +82,28 @@ fun Categories() {
             ),
             ListItem(
                 id = "business",
-                210.dp,
+                180.dp,
                 Color(0xFFACE2E1).copy(alpha = 1f),
                 "BUSINESS",
                 R.drawable.business
             ),
             ListItem(
                 id = "technology",
-                180.dp,
+                210.dp,
                 Color(0xFFFB6D48).copy(alpha = 1f),
                 "TECHNOLOGY",
                 R.drawable.tech
             ),
             ListItem(
                 id = "health",
-                210.dp,
+                180.dp,
                 Color(0xFFEFB08C).copy(alpha = 1f),
                 "HEALTH",
                 R.drawable.health
             ),
             ListItem(
                 id = "sports",
-                180.dp,
+                210.dp,
                 Color(0xFF008DDA).copy(alpha = 1f),
                 "SPORTS",
                 R.drawable.sport
