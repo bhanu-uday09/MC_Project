@@ -3,11 +3,13 @@ package com.msr_mc24.mc_newsapp
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -109,6 +113,25 @@ fun DescriptionScreen(
     val database = Firebase.database
     val favoritesRef = database.getReference("favorites")
 
+    // Initialize TextToSpeech object
+    var tts: TextToSpeech? by remember { mutableStateOf(null) }
+    DisposableEffect(context) {
+        tts = TextToSpeech(context) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                // TTS engine initialized successfully
+                tts?.language = Locale.getDefault()
+            } else {
+                Log.e("TTS", "Initialization failed")
+            }
+        }
+
+        onDispose {
+            // Release TextToSpeech object when composable is disposed
+            tts?.stop()
+            tts?.shutdown()
+        }
+    }
+
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(10.dp)
@@ -155,11 +178,19 @@ fun DescriptionScreen(
                         Text(
                             text = author,
                             style = MaterialTheme.typography.labelLarge,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(top = 6.dp,end = 10.dp)
                         )
                         Text(
                             text = date,
-                            style = MaterialTheme.typography.labelLarge
+                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.padding(top = 6.dp,end = 10.dp)
+                        )
+                        // ClickableTextToSpeech for title, author, and description
+                        ClickableTextToSpeech(
+                            texts = listOf(title, author, description),
+                            tts = tts
                         )
                     }
 
@@ -290,4 +321,40 @@ fun DescriptionScreen(
             }
         }
     }
+}
+
+@Composable
+fun ClickableTextToSpeech(texts: List<String>, tts: TextToSpeech?) {
+    var isSpeaking by remember { mutableStateOf(false) }
+
+    // Image for the button
+    val image = if (isSpeaking) {
+        // If TTS is speaking, use stop icon
+        R.drawable.stop
+    } else {
+        // If TTS is not speaking, use read icon
+        R.drawable.play
+    }
+
+    // Clickable image
+    Image(
+        painter = painterResource(id = image),
+        contentDescription = if (isSpeaking) "Stop Speaking" else "Read Aloud",
+        modifier = Modifier
+            .padding(start = 20.dp)
+            .height(30.dp)
+            .clickable {
+                if (isSpeaking) {
+                    // If TTS is speaking, stop it
+                    tts?.stop()
+                    isSpeaking = false
+                } else {
+                    // If TTS is not speaking, start it
+                    texts.forEach { text ->
+                        tts?.speak(text, TextToSpeech.QUEUE_ADD, null, null)
+                    }
+                    isSpeaking = true
+                }
+            }
+    )
 }
