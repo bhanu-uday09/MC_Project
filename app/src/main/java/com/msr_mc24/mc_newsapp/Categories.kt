@@ -96,14 +96,14 @@ fun Categories() {
             ),
             ListItem(
                 id = "health",
-                180.dp,
+                210.dp,
                 Color(0xFFEFB08C).copy(alpha = 1f),
                 "HEALTH",
                 R.drawable.health
             ),
             ListItem(
                 id = "sports",
-                210.dp,
+                180.dp,
                 Color(0xFF008DDA).copy(alpha = 1f),
                 "SPORTS",
                 R.drawable.sport
