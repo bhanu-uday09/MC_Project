@@ -14,6 +14,7 @@
 8. [Future Enhancements](#future-enhancements)
 9. [Conclusion](#conclusion)
 10. [References](#references)
+11. [Contributors](#contributors)
 
 ## Introduction
 
@@ -124,3 +125,9 @@ While our app offers a robust set of features, there are several avenues for fut
 - [Live Location Tracking Tutorial](https://www.youtube.com/watch?v=Jj14sw4Yxk0)
 - [Text-to-Speech Tutorial](https://www.youtube.com/watch?v=vo24aZ0UtsA)
 - [Native C++ Integration Tutorial](https://youtu.be/bI5_lLovoy4?si=I8Jf4k0iOqbYmZui)
+
+## Contributors
+
+- [M Bhanu Uday - MT23043](https://github.com/bhanu-uday09)
+- [Ritik Chhatwani - MT23076](https://github.com/ritik23076)
+- [Saurabh Kumar - MT23084](https://github.com/kumarsaurabh614)
