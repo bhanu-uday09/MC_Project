@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "13856498800",
-    "project_id": "mc-project-mt23043",
-    "storage_bucket": "mc-project-mt23043.appspot.com"
+    "project_number": "400766562377",
+    "project_id": "mc-project-23043",
+    "storage_bucket": "mc-project-23043.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:13856498800:android:3aa679d6c5e000598600b5",
+        "mobilesdk_app_id": "1:400766562377:android:27d3272865e8b8156ecf98",
         "android_client_info": {
           "package_name": "com.msr_mc24.mc_newsapp"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDAADzrEa3D7Re3NA5Y0PIb5COJZTCSkRY"
+          "current_key": "AIzaSyADM4qHMKDwF7aJkBfOE5Y0RqOzQlbAE6A"
         }
       ],
       "services": {

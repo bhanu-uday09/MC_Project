@@ -32,7 +32,8 @@ import com.msr_mc24.mc_newsapp.ui.theme.MC_NewsAppTheme
 class FavoriteNews : ComponentActivity() {
 
     private lateinit var database: DatabaseReference
-    private val favorites: MutableState<List<NewsItem>> = mutableStateOf(emptyList())
+    private val favorites: MutableState<List<NewsItem>?> = mutableStateOf(null)
+    private var databaseListener: ValueEventListener? = null // To hold reference of ValueEventListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +49,7 @@ class FavoriteNews : ComponentActivity() {
     }
 
     private fun retrieveFavorites() {
-        database.addValueEventListener(object : ValueEventListener {
+        databaseListener = database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val newsItems = snapshot.children.mapNotNull { it.getValue(NewsItem::class.java) }
                 favorites.value = newsItems
@@ -64,13 +65,22 @@ class FavoriteNews : ComponentActivity() {
         })
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        databaseListener?.let { database.removeEventListener(it) } // Remove the listener to avoid memory leaks
+    }
 
     @Composable
     fun FavoriteNewsContent() {
-        LazyColumn {
-            items(favorites.value) { newsItem ->
-                NewsArticleCard2(newsItem)
+        val favList = favorites.value
+        if (favList != null) {
+            LazyColumn {
+                items(favList) { newsItem ->
+                    NewsArticleCard2(newsItem)
+                }
             }
+        } else {
+            Text("Loading...") // Placeholder for loading state
         }
     }
 
@@ -105,8 +115,6 @@ class FavoriteNews : ComponentActivity() {
                     text = "${newsItem.author ?: "Unknown"}",
                     style = MaterialTheme.typography.bodySmall
                 )
-
-//                    Text(text = newsArticle.description ?: "No Description", style = MaterialTheme.typography.bodyMedium)
             }
         }
         Divider(modifier = Modifier.height(1.dp))
