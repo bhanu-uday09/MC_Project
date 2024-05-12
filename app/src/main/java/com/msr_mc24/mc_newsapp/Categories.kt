@@ -199,6 +199,10 @@ fun Categories() {
                             context.startActivity(intent)
                         }
 
+                        else if(clickedCategory=="fav"){
+                            val intent = Intent(context, FavoriteNews::class.java)
+                            context.startActivity(intent)
+                        }
                         else {
                             selectedCategory = clickedCategory
                             val intent = Intent(context, NewsDisplay::class.java).apply {

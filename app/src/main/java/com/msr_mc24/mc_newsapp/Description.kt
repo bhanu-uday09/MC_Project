@@ -49,6 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.core.content.ContextCompat.startActivity
 import coil.compose.rememberAsyncImagePainter
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.Locale
@@ -61,7 +64,9 @@ data class NewsItem(
     val date: String,
     val url: String,
     val image: String
-)
+) {
+    constructor() : this(" ", " "," ", " "," ", " "," ")
+}
 
 class Description : ComponentActivity() {
 
@@ -74,6 +79,10 @@ class Description : ComponentActivity() {
         val date = intent.getStringExtra("date") ?: "No Date"
         val url = intent.getStringExtra("url") ?: "No URL"
         val image = intent.getStringExtra("image") ?: "No Image"
+
+        // Check if it's from favorites
+        val fromFavorites = intent.getBooleanExtra("fromFavorites", false)
+
         setContent {
             DescriptionScreen(
                 title = title,
@@ -82,10 +91,12 @@ class Description : ComponentActivity() {
                 author = author,
                 date = date,
                 url = url,
-                image = image
+                image = image,
+                fromFavorites = fromFavorites // Pass the flag to DescriptionScreen
             )
         }
     }
+
     companion object {
         init {
             System.loadLibrary("mc_newsapp")
@@ -104,7 +115,8 @@ fun DescriptionScreen(
     author: String,
     date: String,
     url: String,
-    image: String
+    image: String,
+    fromFavorites: Boolean
 ) {
 
     val context = LocalContext.current
@@ -291,33 +303,60 @@ fun DescriptionScreen(
             }
         }
         Row {
+            // Change the button label and functionality based on whether it's from favorites or not
             Button(
                 onClick = {
-                    val newsItem = NewsItem(
-                        title = title,
-                        description = description,
-                        content = content,
-                        author = author,
-                        date = date,
-                        url = url,
-                        image = image
-                    )
+                    if (fromFavorites) {
+                        // Remove from favorites logic
+                        val query = favoritesRef.orderByChild("title").equalTo(title)
+                        query.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                for (postSnapshot in snapshot.children) {
+                                    postSnapshot.ref.removeValue()
+                                        .addOnSuccessListener {
+                                            Toast.makeText(context, "Removed from Favorites", Toast.LENGTH_SHORT).show()
+                                            Log.e("mas","Removed")
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(context, "Failed to remove from Favorites", Toast.LENGTH_SHORT).show()
+                                        }
+                                }
+                            }
 
-                    val newsItemId = favoritesRef.push().key
-                    newsItemId?.let {
-                        favoritesRef.child(it).setValue(newsItem)
-                            .addOnSuccessListener {
-                                Toast.makeText(context, "Added to Favorites", Toast.LENGTH_SHORT).show()
-                                Log.e("mas","Added")
+                            override fun onCancelled(error: DatabaseError) {
+                                Log.e("mas", "Failed to read value.", error.toException())
                             }
-                            .addOnFailureListener {
-                                Toast.makeText(context, "Failed to add to Favorites", Toast.LENGTH_SHORT).show()
-                            }
+                        })
+                    } else {
+                        // Add to favorites logic
+                        val newsItem = NewsItem(
+                            title = title,
+                            description = description,
+                            content = content,
+                            author = author,
+                            date = date,
+                            url = url,
+                            image = image
+                        )
+
+                        val newsItemId = favoritesRef.push().key
+                        newsItemId?.let {
+                            favoritesRef.child(it).setValue(newsItem)
+                                .addOnSuccessListener {
+                                    Toast.makeText(context, "Added to Favorites", Toast.LENGTH_SHORT).show()
+                                    Log.e("mas","Added")
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(context, "Failed to add to Favorites", Toast.LENGTH_SHORT).show()
+                                }
+                        }
                     }
                 },
                 modifier = Modifier.weight(1f)
             ) {
-                Text(text = "Add to Favorites")
+                Text(
+                    text = if (fromFavorites) "Remove from Favorites" else "Add to Favorites"
+                )
             }
         }
     }
