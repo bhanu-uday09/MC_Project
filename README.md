@@ -88,6 +88,8 @@ The project aims to develop a user-friendly news application that aggregates new
 - **Categories**: Displayed categories using the Lazy Staggered Grid List of Jetpack Compose.
 - **News Display**: Card view display of news articles fetched from the News API.
 - **News Description**: Detailed display of news article including title, author, description, and content.
+- **Search Based News** - Integration of the query-based news endpoint of News API.
+- **Location-based News** - Fetched the live location of the device using the FusedLocationProviderClient. It requests necessary permissions for location access, retrieves the latitude and longitude coordinates, and reverse geocoded to obtain human-readable address information, facilitating location-based functionalities.
 
 ## Testing and Debugging
 
