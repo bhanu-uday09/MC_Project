@@ -1,7 +1,6 @@
-# Samachar: The News App![samachar_icon](https://github.com/bhanu-uday09/MC_Project/assets/140607545/85832c76-c725-434a-9be4-e9581cd3bb41)
+# Samachar: The News App!
 
-
-![logo_news](https://github.com/bhanu-uday09/MC_Project/assets/140607545/c3123da5-92f9-443a-8397-384aa04a8c60)
+!![samachar_icon](https://github.com/bhanu-uday09/MC_Project/assets/140607545/85832c76-c725-434a-9be4-e9581cd3bb41)
 
 ## Table of Contents
 
