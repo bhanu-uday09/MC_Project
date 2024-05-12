@@ -1,6 +1,6 @@
 # Samachar: The News App!
 
-<img src="https://github.com/bhanu-uday09/MC_Project/assets/140607545/f6564734-409f-41f0-a36d-cc1b21de2e2d" alt="logo_news" width="200" height="200">
+<img src="https://github.com/bhanu-uday09/MC_Project/assets/140607545/f6564734-409f-41f0-a36d-cc1b21de2e2d" alt="logo_news" width="100" height="100">
 
 ## Table of Contents
 
